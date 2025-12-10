@@ -34,6 +34,7 @@ const Login = () => {
             className="p-4 my-4 bg-gray-700 w-full rounded-md"
           />
         )}
+
         <input
           type="text"
           placeholder="Email address"
@@ -44,12 +45,19 @@ const Login = () => {
           placeholder="Password"
           className="p-4 my-4 bg-gray-700 w-full rounded-md"
         />
+        {!isSignIn && (
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="p-4 my-4 bg-gray-700 w-full rounded-md"
+          />
+        )}
 
         <button className="p-4 my-4 w-full rounded-md bg-primary cursor-pointer">
           {isSignIn ? "Sign In" : "Sign Up"}
         </button>
 
-        <p className="text-white/50 ">
+        <p className="text-white/50 h-full">
           {isSignIn ? "New to Filmike?" : "Already have an account?"}{" "}
           <span
             className="text-white cursor-pointer font-bold"
