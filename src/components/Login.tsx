@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "./Header";
-import filmikeLoginBg from "/bg-filmike.png";
+import filmikeLoginBg from "/bg-filmik.jpeg";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
