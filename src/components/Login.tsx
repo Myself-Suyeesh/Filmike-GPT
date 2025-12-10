@@ -1,31 +1,86 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-empty */
 import { useRef, useState } from "react";
 import Header from "./Header";
 import filmikeLoginBg from "/bg-filmik.jpeg";
 import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
+  const navigate = useNavigate();
   const [validationErrorMessage, setValidationErrorMessage] = useState<{
     email?: string;
     password?: string;
     name?: string;
+    confirmPass?: string;
   } | null>(null);
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
   const name = useRef<HTMLInputElement | null>(null);
+  const confirmPassword = useRef<HTMLInputElement | null>(null);
 
   const toggleSignIn = () => {
     setIsSignIn(!isSignIn);
+    setValidationErrorMessage(null); // Clear errors when toggling
   };
 
   const handleButtonClick = () => {
+    const emailValue = email?.current?.value ?? "";
+    const passwordValue = password?.current?.value ?? "";
+    const nameValue = name?.current?.value ?? "";
+    const confirmPassValue = confirmPassword?.current?.value ?? "";
+
+    // Only validate confirmPass for Sign Up
     const validationMessage = checkValidData(
-      email?.current?.value ?? "",
-      password?.current?.value ?? "",
-      name?.current?.value ?? ""
+      emailValue,
+      passwordValue,
+      isSignIn,
+      nameValue,
+      confirmPassValue
     );
 
     setValidationErrorMessage(validationMessage);
+
+    if (validationMessage) return;
+
+    //SignIn / SignUp logic
+    if (!isSignIn) {
+      //SignUp
+      createUserWithEmailAndPassword(auth, emailValue, passwordValue)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          navigate("/browse");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error("Sign up error:", errorCode, errorMessage);
+          // Handle error (e.g., show error message to user)
+        });
+    } else if (isSignIn) {
+      //SignIn
+      signInWithEmailAndPassword(auth, emailValue, passwordValue)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          navigate("/browse");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error("Sign in error:", errorCode, errorMessage);
+          // Handle error (e.g., show error message to user)
+        });
+    }
   };
 
   return (
@@ -81,14 +136,21 @@ const Login = () => {
           {validationErrorMessage?.password}
         </p>
         {!isSignIn && (
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="p-4 my-4 bg-gray-700 w-full rounded-md"
-          />
+          <>
+            <input
+              type="password"
+              ref={confirmPassword}
+              placeholder="Confirm Password"
+              className="p-4 my-4 bg-gray-700 w-full rounded-md"
+            />
+            <p className="text-red-500 text-sm ">
+              {validationErrorMessage?.confirmPass}
+            </p>
+          </>
         )}
 
         <button
+          type="submit"
           className="p-4 my-4 w-full rounded-md bg-primary cursor-pointer font-semibold"
           onClick={handleButtonClick}
         >

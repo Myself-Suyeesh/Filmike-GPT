@@ -7,3 +7,6 @@
 - Login Form with basic UI
 - Form Validation
 - useRef Hook
+- Authentication using Firebase
+- SignUp user account
+- Navigating inside application after successfully SignIn
