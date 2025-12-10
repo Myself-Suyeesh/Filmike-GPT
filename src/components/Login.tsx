@@ -1,18 +1,38 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Header from "./Header";
 import filmikeLoginBg from "/bg-filmik.jpeg";
+import { checkValidData } from "../utils/validate";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
+  const [validationErrorMessage, setValidationErrorMessage] = useState<{
+    email?: string;
+    password?: string;
+    name?: string;
+  } | null>(null);
+  const email = useRef<HTMLInputElement | null>(null);
+  const password = useRef<HTMLInputElement | null>(null);
+  const name = useRef<HTMLInputElement | null>(null);
 
   const toggleSignIn = () => {
     setIsSignIn(!isSignIn);
   };
+
+  const handleButtonClick = () => {
+    const validationMessage = checkValidData(
+      email?.current?.value ?? "",
+      password?.current?.value ?? "",
+      name?.current?.value ?? ""
+    );
+
+    setValidationErrorMessage(validationMessage);
+  };
+
   return (
     <div>
       <Header />
       <div className="absolute -z-10">
-        <div className="absolute w-full h-screen bg-black/50 "></div>
+        <div className="absolute w-full h-screen bg-black/25 "></div>
         <img
           className="h-screen"
           src={filmikeLoginBg}
@@ -21,30 +41,45 @@ const Login = () => {
       </div>
 
       <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
         action=""
-        className="bg-black/60 text-sm  p-10 text-white absolute w-1/4 z-10 mx-auto my-64 right-0 left-0 flex flex-col justify-center rounded-md"
+        className="bg-black/60 text-sm  p-12 text-white absolute w-3/12 z-10 mx-auto my-64 right-0 left-0 flex flex-col justify-center rounded-md"
       >
-        <p className="text-3xl font-bold my-4">
+        <p className="text-3xl font-bold py-4">
           {isSignIn ? "Sign In" : "Sign Up"}
         </p>
         {!isSignIn && (
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="p-4 my-4 bg-gray-700 w-full rounded-md"
-          />
+          <>
+            <input
+              type="text"
+              ref={name}
+              placeholder="Full Name"
+              className="p-4 my-4 bg-gray-700 w-full rounded-md"
+            />
+            <p className="text-red-500 text-sm ">
+              {validationErrorMessage?.name}
+            </p>
+          </>
         )}
 
         <input
           type="text"
+          ref={email}
           placeholder="Email address"
           className="p-4 my-4 bg-gray-700 w-full rounded-md"
         />
+        <p className="text-red-500 text-sm ">{validationErrorMessage?.email}</p>
         <input
           type="password"
+          ref={password}
           placeholder="Password"
           className="p-4 my-4 bg-gray-700 w-full rounded-md"
         />
+        <p className="text-red-500 text-sm ">
+          {validationErrorMessage?.password}
+        </p>
         {!isSignIn && (
           <input
             type="password"
@@ -53,7 +88,10 @@ const Login = () => {
           />
         )}
 
-        <button className="p-4 my-4 w-full rounded-md bg-primary cursor-pointer">
+        <button
+          className="p-4 my-4 w-full rounded-md bg-primary cursor-pointer font-semibold"
+          onClick={handleButtonClick}
+        >
           {isSignIn ? "Sign In" : "Sign Up"}
         </button>
 

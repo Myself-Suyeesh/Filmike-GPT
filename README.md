@@ -5,3 +5,5 @@
 - AppRouter initiated
 - Header Updated
 - Login Form with basic UI
+- Form Validation
+- useRef Hook
